@@ -34,7 +34,7 @@ export default async function Home() {
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-          {movies.map((movie: any) => (
+          {movies.map((movie: { id: string, title: string, poster_url: string, rating: string, release_date: string, description: string }) => (
             <Link href={`/movie/${movie.id}`} key={movie.id} className="group relative rounded-2xl overflow-hidden bg-slate-800/50 border border-slate-700/50 hover:border-[#00f2fe]/50 transition-all duration-300 transform hover:-translate-y-2 cursor-pointer shadow-lg hover:shadow-[0_10px_30px_rgba(0,242,254,0.15)] flex flex-col h-full">
               {/* Poster Container with Aspect Ratio */}
               <div className="relative w-full aspect-[2/3] overflow-hidden">

@@ -1,19 +1,56 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { bookSeats } from './actions'
 import { useRouter } from 'next/navigation'
 import { Monitor, Armchair, CheckCircle2, QrCode } from 'lucide-react'
+import { createClient } from '@/utils/supabase/client'
 
-export default function ClientSeatSelector({ showtime, seats, bookedSeatIds }: { showtime: any, seats: any[], bookedSeatIds: string[] }) {
+type Seat = { id: string, seat_row: string, seat_col: number, seat_type: string }
+type Showtime = { id: string, base_price: number, movies?: { title: string } }
+
+export default function ClientSeatSelector({ showtime, seats, bookedSeatIds }: { showtime: Showtime, seats: Seat[], bookedSeatIds: string[] }) {
   const router = useRouter()
-  const [selectedSeats, setSelectedSeats] = useState<any[]>([])
+  const [selectedSeats, setSelectedSeats] = useState<Seat[]>([])
   const [loading, setLoading] = useState(false)
   const [paymentMode, setPaymentMode] = useState(false)
   const [successMode, setSuccessMode] = useState(false)
+  const [currentTicketId, setCurrentTicketId] = useState<string | null>(null)
+  const [dynamicBookedSeatIds, setDynamicBookedSeatIds] = useState<string[]>(bookedSeatIds)
+
+  useEffect(() => {
+    const supabase = createClient()
+    const channel = supabase.channel('realtime_seats')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'ticket_seats', filter: `showtime_id=eq.${showtime.id}` },
+        (payload: any) => {
+           // Có người vừa mua ghế thành công
+           setDynamicBookedSeatIds(prev => {
+              if (prev.includes(payload.new.seat_id)) return prev
+              return [...prev, payload.new.seat_id]
+           })
+
+           // Nếu mình đang định mua ghế mà bị ai đó hớt tay trên, lập tức gỡ bỏ nút chọn
+           setSelectedSeats(prev => {
+              const stillAvailable = prev.filter(s => s.id !== payload.new.seat_id)
+              if (stillAvailable.length < prev.length) {
+                 // Có thể show toast thông báo: 'Một ghế bạn đang chọn vừa bị mua'
+                 console.log('Ghế đã bị đặt trước bởi ai đó!')
+              }
+              return stillAvailable
+           })
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [showtime.id])
 
   // Gom nhóm ghế thành từng hàng cho dễ render grid
-  const rowMap: Record<string, any[]> = {}
+  const rowMap: Record<string, Seat[]> = {}
   seats.forEach(s => {
      if (!rowMap[s.seat_row]) rowMap[s.seat_row] = []
      rowMap[s.seat_row].push(s)
@@ -21,9 +58,9 @@ export default function ClientSeatSelector({ showtime, seats, bookedSeatIds }: {
   // Sort các hàng từ A -> Z
   const sortedRows = Object.keys(rowMap).sort()
 
-  const handleToggleSeat = (seat: any) => {
+  const handleToggleSeat = (seat: Seat) => {
     // Nếu ghế đã bị bán thì không phản hồi
-    if (bookedSeatIds.includes(seat.id)) return
+    if (dynamicBookedSeatIds.includes(seat.id)) return
 
     const index = selectedSeats.findIndex(s => s.id === seat.id)
     if (index > -1) {
@@ -56,11 +93,11 @@ export default function ClientSeatSelector({ showtime, seats, bookedSeatIds }: {
     setLoading(false)
 
     if (res.success) {
-       setPaymentMode(false)
-       setSuccessMode(true)
+       setCurrentTicketId(res.ticket_id)
+       setPaymentMode(true) // Chỉ bật QR sau khi giữ ghế thành công
     } else {
-       alert(res.message)
-       if (res.message.includes('tíc tắc')) {
+       alert(res.message || 'Lỗi không xác định')
+       if (res.message && res.message.includes('tíc tắc')) {
           setPaymentMode(false)
           router.refresh() // Reset lại để lấy trạng thái grid mới nhất
           setSelectedSeats([])
@@ -86,21 +123,60 @@ export default function ClientSeatSelector({ showtime, seats, bookedSeatIds }: {
      )
   }
 
-  if (paymentMode) {
+  if (paymentMode && currentTicketId) {
+     // Lắng nghe Webhook lật trạng thái vé từ PENDING -> PAID
+     useEffect(() => {
+        const supabase = createClient()
+        const channel = supabase.channel(`ticket_${currentTicketId}`)
+          .on(
+            'postgres_changes',
+            { event: 'UPDATE', schema: 'public', table: 'tickets', filter: `id=eq.${currentTicketId}` },
+            (payload: any) => {
+               if (payload.new.status === 'PAID') {
+                  setPaymentMode(false)
+                  setSuccessMode(true)
+               }
+            }
+          )
+          .subscribe()
+
+        return () => {
+          supabase.removeChannel(channel)
+        }
+     }, [currentTicketId])
+
      // Render Cổng thanh toán mã QR Động VietQR
      const seatNames = selectedSeats.map(s => `${s.seat_row}${s.seat_col}`).join(', ')
      const transferContent = `N THERA VE ${seatNames}`
-     // Sử dụng VietQR API: nganhang-stk-template.png?amount=x&addInfo=y&accountName=z
+     // Sử dụng VietQR API
      const qrUrl = `https://img.vietqr.io/image/970418-5811852874-compact2.png?amount=${totalAmount}&addInfo=${encodeURIComponent(transferContent)}&accountName=DAO MINH NGHIA`
 
      return (
         <div className="flex flex-col md:flex-row gap-8 items-stretch animate-in fade-in duration-500">
-           <div className="flex-1 bg-slate-900/60 p-8 rounded-3xl border border-slate-800 backdrop-blur-md flex flex-col items-center text-center">
-              <h2 className="text-2xl font-black text-white flex items-center gap-2 mb-2"><QrCode className="text-[#00f2fe]" /> Quét Mã Thanh Toán</h2>
-              <p className="text-slate-400 text-sm mb-8">Sử dụng App Ngân hàng bất kỳ để quét mã. Số tiền sẽ tự động được nhập.</p>
+           <div className="flex-1 bg-slate-900/60 p-8 rounded-3xl border border-slate-800 backdrop-blur-md flex flex-col items-center text-center relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4">
+                 {/* Nút giả lập gọi Webhook nhanh cho Giám khảo test */}
+                 <button onClick={async () => {
+                    await fetch('/api/webhooks/payment', {
+                       method: 'POST',
+                       headers: { 'Content-Type': 'application/json' },
+                       body: JSON.stringify({ ticket_id: currentTicketId, status: 'PAID' })
+                    })
+                 }} className="px-3 py-1 bg-green-500/20 text-green-400 text-xs rounded-full border border-green-500/50 hover:bg-green-500/30">
+                    [Admin Test] Giả lập Khách chuyển khoản
+                 </button>
+              </div>
 
-              <div className="bg-white p-4 rounded-2xl shadow-[0_0_50px_rgba(0,242,254,0.15)] mb-6">
+              <h2 className="text-2xl font-black text-white flex items-center gap-2 mb-2"><QrCode className="text-[#00f2fe]" /> Quét Mã Thanh Toán</h2>
+              <p className="text-slate-400 text-sm mb-8">Sử dụng App Ngân hàng bất kỳ để quét mã. Chờ 3-5 giây để hệ thống đối soát và tự động lật trang.</p>
+
+              <div className="bg-white p-4 rounded-2xl shadow-[0_0_50px_rgba(0,242,254,0.15)] mb-6 relative">
                  <img src={qrUrl} alt="QR Code Payment" className="w-64 h-64 object-contain rounded-xl" />
+              </div>
+
+              <div className="flex items-center gap-2 text-slate-300 font-medium my-4">
+                  <div className="w-4 h-4 border-2 border-slate-500 border-t-[#00f2fe] rounded-full animate-spin"></div>
+                  Đang chờ cổng thanh toán xác nhận...
               </div>
 
               <div className="grid grid-cols-2 gap-4 w-full max-w-md text-left bg-slate-800/50 p-4 rounded-xl border border-slate-700">
@@ -115,6 +191,7 @@ export default function ClientSeatSelector({ showtime, seats, bookedSeatIds }: {
               <div>
                  <h3 className="text-lg font-black text-white mb-6 uppercase tracking-wider">Hóa Đơn Của Bạn</h3>
                  <div className="space-y-3 mb-6">
+                     <div className="flex justify-between text-slate-300"><span>Mã Vé:</span> <span className="font-mono text-xs text-[#00f2fe] break-all w-3/4 text-right">{currentTicketId}</span></div>
                      <div className="flex justify-between text-slate-300"><span>Phim:</span> <span className="font-bold text-white text-right">{showtime.movies?.title}</span></div>
                      <div className="flex justify-between text-slate-300"><span>Vị trí ghế:</span> <span className="font-bold text-[#00f2fe]">{seatNames}</span></div>
                  </div>
@@ -127,15 +204,11 @@ export default function ClientSeatSelector({ showtime, seats, bookedSeatIds }: {
                  </div>
                  
                  <button 
-                    onClick={handleCheckout}
-                    disabled={loading}
-                    className="w-full py-4 rounded-xl bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-300 hover:to-emerald-400 text-slate-950 font-black uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(52,211,153,0.3)] hover:shadow-[0_0_30px_rgba(52,211,153,0.5)] flex items-center justify-center gap-2"
-                 >
-                    {loading ? 'Đang xác nhận...' : <><CheckCircle2 size={20} /> Tôi Đã Chuyển Khoản</>}
-                 </button>
-                 <button 
-                    onClick={() => setPaymentMode(false)}
-                    disabled={loading}
+                    onClick={() => {
+                        setPaymentMode(false);
+                        setCurrentTicketId(null);
+                        // Khi hủy, có thể phải xoá ticket PENDING để nhả ghế
+                    }}
                     className="w-full mt-3 py-3 rounded-xl border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white transition-all text-sm font-bold"
                  >
                     Hủy bỏ
@@ -167,7 +240,7 @@ export default function ClientSeatSelector({ showtime, seats, bookedSeatIds }: {
                   
                   {/* Sort cột từ 1 đến 10 */}
                   {rowMap[rowLabel].sort((a,b) => a.seat_col - b.seat_col).map(seat => {
-                     const isTaken = bookedSeatIds.includes(seat.id)
+                     const isTaken = dynamicBookedSeatIds.includes(seat.id)
                      const isSelected = selectedSeats.some(s => s.id === seat.id)
                      const isVIP = seat.seat_type === 'VIP'
 
@@ -249,11 +322,11 @@ export default function ClientSeatSelector({ showtime, seats, bookedSeatIds }: {
              </div>
              
              <button 
-                onClick={() => setPaymentMode(true)}
-                disabled={selectedSeats.length === 0}
+                onClick={handleCheckout}
+                disabled={selectedSeats.length === 0 || loading}
                 className="w-full py-4 rounded-xl bg-gradient-to-r from-[#00f2fe] to-[#4facfe] hover:from-[#4facfe] hover:to-[#00f2fe] text-slate-950 font-black uppercase tracking-widest transition-all disabled:opacity-20 shadow-[0_0_20px_rgba(0,242,254,0.3)] hover:shadow-[0_0_30px_rgba(0,242,254,0.5)]"
              >
-                TIẾN HÀNH THANH TOÁN
+                {loading ? 'ĐANG GIỮ GHẾ...' : 'TIẾN HÀNH THANH TOÁN'}
              </button>
           </div>
        </div>

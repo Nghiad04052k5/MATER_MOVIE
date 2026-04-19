@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { logout } from "@/app/login/actions";
+import AIChatbot from "@/components/AIChatbot";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -61,6 +62,12 @@ export default async function RootLayout({
                       Khu Quản Trị
                     </Link>
                   )}
+                  {user.email === 'staff@nthera.vn' && (
+                    <Link href="/staff/scanner" className="px-5 py-2 rounded-full border border-purple-500 text-purple-400 hover:bg-purple-500/10 transition-all text-sm font-semibold flex items-center gap-2">
+                       <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                       Quét Vé (Staff)
+                    </Link>
+                  )}
                   <Link href="/my-tickets" className="px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-all text-sm font-semibold">
                     Vé Của Tôi
                   </Link>
@@ -80,6 +87,7 @@ export default async function RootLayout({
         <main className="flex-1 mt-20">
           {children}
         </main>
+        <AIChatbot />
       </body>
     </html>
   );

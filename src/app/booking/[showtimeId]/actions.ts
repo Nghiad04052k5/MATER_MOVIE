@@ -27,7 +27,7 @@ export async function bookSeats(formData: FormData) {
        user_id: user.id,
        showtime_id,
        total_amount,
-       status: 'PAID' // Đồ án mặc định coi như thanh toán xong ngay
+       status: 'PENDING'
     }])
     .select('id')
     .single()

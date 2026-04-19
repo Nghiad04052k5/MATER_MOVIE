@@ -48,6 +48,7 @@ export default async function ShowtimesPage() {
                   <p className="text-slate-500 italic text-center">Chưa có hệ thống suất chiếu nào được tạo.</p>
                ) : (
                   <div className="grid gap-4">
+                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                      {showtimes?.map((st: any) => (
                         <div key={st.id} className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border border-slate-700/50 bg-slate-800/20 hover:border-[#00f2fe]/50 transition-colors">
                            <div className="space-y-1">

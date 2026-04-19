@@ -52,6 +52,7 @@ export default async function MyTicketsPage() {
           </div>
        ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
              {tickets?.map((ticket: any) => {
                 const st = ticket.showtimes
                 const dateObj = new Date(st.start_time)
@@ -59,10 +60,11 @@ export default async function MyTicketsPage() {
                 const timeStr = dateObj.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
                 
                 // Trích xuất mảng Ghế
-                const seatsInfo = ticket.ticket_seats.map((ts: any) => \`\${ts.seats.seat_row}\${ts.seats.seat_col}\`).join(', ')
+                /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+                const seatsInfo = ticket.ticket_seats.map((ts: any) => `${ts.seats.seat_row}${ts.seats.seat_col}`).join(', ')
                 
                 // Dùng ID để làm mã QR Giả lập bảo mật
-                const pseudoQRCode = \`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=\${ticket.id}\`
+                const pseudoQRCode = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${ticket.id}`
 
                 return (
                    <div key={ticket.id} className="relative flex bg-slate-900 rounded-3xl border border-slate-700 overflow-hidden shadow-2xl hover:border-[#00f2fe]/40 transition-colors">
