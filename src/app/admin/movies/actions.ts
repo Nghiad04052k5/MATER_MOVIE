@@ -22,14 +22,28 @@ export async function syncTMDBMovies() {
     const data = await res.json()
     const tmdbMovies = data.results || []
 
-    const mappedMovies = tmdbMovies.map((m: any) => ({
-      title: m.title,
-      description: m.overview,
-      poster_url: `https://image.tmdb.org/t/p/w500${m.poster_path}`,
-      trailer_url: '', // Có thể fetch sau nếu cần
-      duration_mins: 120, // Default for now
-      release_date: m.release_date || null,
-      rating: m.vote_average || 0
+    const mappedMovies = await Promise.all(tmdbMovies.map(async (m: any) => {
+      let trailer_url = '';
+      try {
+        const vidRes = await fetch(`https://api.themoviedb.org/3/movie/${m.id}/videos?api_key=${process.env.TMDB_API_KEY}`)
+        if (vidRes.ok) {
+          const vidData = await vidRes.json()
+          const trailer = vidData.results?.find((v: any) => v.type === 'Trailer' && v.site === 'YouTube')
+          if (trailer) trailer_url = `https://www.youtube.com/watch?v=${trailer.key}`
+        }
+      } catch (e) {
+        console.error('Không thể fetch trailer cho phim', m.title)
+      }
+
+      return {
+        title: m.title,
+        description: m.overview,
+        poster_url: `https://image.tmdb.org/t/p/w500${m.poster_path}`,
+        trailer_url: trailer_url,
+        duration_mins: 120, // Default for now
+        release_date: m.release_date || null,
+        rating: m.vote_average || 0
+      }
     }))
 
     // Do Supabase insert (Cần thiết lập RLS trong DB nhưng hiện chạy quyền Admin thì không sao)

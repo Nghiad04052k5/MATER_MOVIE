@@ -74,9 +74,13 @@ export default async function MovieDetailPage(props: { params: Promise<{ id: str
                 </p>
 
                 <div className="mt-8 flex gap-4">
-                   <button className="flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-[#00f2fe] to-[#4facfe] text-black font-black uppercase tracking-wider hover:scale-105 transition-transform shadow-[0_0_25px_rgba(0,242,254,0.3)]">
+                   <a 
+                      href={movie.trailer_url || `https://www.youtube.com/results?search_query=${encodeURIComponent(movie.title + ' trailer')}`} 
+                      target="_blank"
+                      className="flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-[#00f2fe] to-[#4facfe] text-black font-black uppercase tracking-wider hover:scale-105 transition-transform shadow-[0_0_25px_rgba(0,242,254,0.3)]"
+                   >
                       <PlayCircle /> Xem Trailer
-                   </button>
+                   </a>
                 </div>
              </div>
           </div>
