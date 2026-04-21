@@ -9,8 +9,20 @@ export default function TrailerModal({ trailerUrl }: { trailerUrl?: string }) {
   // Chuyển đổi link youtube thông thường sang dạng embed nếu cần
   const getEmbedUrl = (url?: string) => {
     if (!url) return ''
-    if (url.includes('youtube.com/watch?v=')) {
-      return url.replace('watch?v=', 'embed/')
+    try {
+       const urlObj = new URL(url)
+       if (url.includes('youtube.com')) {
+          const v = urlObj.searchParams.get('v')
+          if (v) return `https://www.youtube.com/embed/${v}`
+       } else if (url.includes('youtu.be')) {
+          const videoId = urlObj.pathname.slice(1) // remove leading slash
+          if (videoId) return `https://www.youtube.com/embed/${videoId}`
+       }
+    } catch(e) {
+       // fallback
+    }
+    if (url.includes('watch?v=')) {
+      return url.split('&')[0].replace('watch?v=', 'embed/')
     }
     return url
   }

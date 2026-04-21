@@ -24,7 +24,7 @@ export default function ClientSeatSelector({ showtime, seats, bookedSeatIds }: {
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'ticket_seats', filter: `showtime_id=eq.${showtime.id}` },
-        (payload: any) => {
+        (payload: { new: { seat_id: string } }) => {
            // Có người vừa mua ghế thành công
            setDynamicBookedSeatIds(prev => {
               if (prev.includes(payload.new.seat_id)) return prev
@@ -105,6 +105,29 @@ export default function ClientSeatSelector({ showtime, seats, bookedSeatIds }: {
     }
   }
 
+  // Lắng nghe Webhook lật trạng thái vé từ PENDING -> PAID (Phải đặt trên mọi lệnh return)
+  useEffect(() => {
+    if (!currentTicketId) return;
+
+    const supabase = createClient()
+    const channel = supabase.channel(`ticket_${currentTicketId}`)
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'tickets', filter: `id=eq.${currentTicketId}` },
+        (payload: { new: { status: string } }) => {
+           if (payload.new.status === 'PAID') {
+              setPaymentMode(false)
+              setSuccessMode(true)
+           }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [currentTicketId])
+
   if (successMode) {
      return (
        <div className="flex flex-col flex-1 items-center justify-center p-12 bg-slate-900/50 rounded-3xl border border-green-500/30 backdrop-blur-md animate-in zoom-in-95 duration-500">
@@ -124,26 +147,6 @@ export default function ClientSeatSelector({ showtime, seats, bookedSeatIds }: {
   }
 
   if (paymentMode && currentTicketId) {
-     // Lắng nghe Webhook lật trạng thái vé từ PENDING -> PAID
-     useEffect(() => {
-        const supabase = createClient()
-        const channel = supabase.channel(`ticket_${currentTicketId}`)
-          .on(
-            'postgres_changes',
-            { event: 'UPDATE', schema: 'public', table: 'tickets', filter: `id=eq.${currentTicketId}` },
-            (payload: any) => {
-               if (payload.new.status === 'PAID') {
-                  setPaymentMode(false)
-                  setSuccessMode(true)
-               }
-            }
-          )
-          .subscribe()
-
-        return () => {
-          supabase.removeChannel(channel)
-        }
-     }, [currentTicketId])
 
      // Render Cổng thanh toán mã QR Động VietQR
      const seatNames = selectedSeats.map(s => `${s.seat_row}${s.seat_col}`).join(', ')

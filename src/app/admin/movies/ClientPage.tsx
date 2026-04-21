@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import { syncTMDBMovies, deleteAllMovies } from './actions'
-import { Download, Trash2, Film, Star, Clock } from 'lucide-react'
+import { Download, Trash2, Film } from 'lucide-react'
 
 // Render Page Client Component để có thể dùng nút Bấm có trạng thái Loading
-export default function AdminMoviesPage({ movies }: { movies?: any[] }) {
+export default function AdminMoviesPage() {
   const [isSyncing, setIsSyncing] = useState(false)
   const [message, setMessage] = useState('')
 
@@ -25,8 +25,12 @@ export default function AdminMoviesPage({ movies }: { movies?: any[] }) {
 
   const handleDelete = async () => {
     if(confirm('Bạn có chắc chắn xoá toàn bộ Phim trong Database?')) {
-       await deleteAllMovies()
-       setMessage('Đã xóa trắng danh sách phim.')
+       const res = await deleteAllMovies()
+       if (res && res.success === false) {
+          setMessage(`Lỗi khi xóa: ${res.message || 'Không rõ nguyên nhân'}`)
+       } else {
+          setMessage('Đã xóa trắng danh sách phim.')
+       }
     }
   }
 

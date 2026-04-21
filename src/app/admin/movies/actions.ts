@@ -22,17 +22,19 @@ export async function syncTMDBMovies() {
     const data = await res.json()
     const tmdbMovies = data.results || []
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const mappedMovies = await Promise.all(tmdbMovies.map(async (m: any) => {
       let trailer_url = '';
       try {
         const vidRes = await fetch(`https://api.themoviedb.org/3/movie/${m.id}/videos?api_key=${process.env.TMDB_API_KEY}`)
         if (vidRes.ok) {
           const vidData = await vidRes.json()
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const trailer = vidData.results?.find((v: any) => v.type === 'Trailer' && v.site === 'YouTube')
           if (trailer) trailer_url = `https://www.youtube.com/watch?v=${trailer.key}`
         }
       } catch (e) {
-        console.error('Không thể fetch trailer cho phim', m.title)
+        console.error('Không thể fetch trailer cho phim', m.title, e)
       }
 
       return {
@@ -62,19 +64,30 @@ export async function syncTMDBMovies() {
     revalidatePath('/')
     
     return { success: true, count: mappedMovies.length }
-  } catch (err: any) {
-    return { success: false, message: err.message }
+  } catch (err: unknown) {
+    return { success: false, message: (err as Error).message }
   }
 }
 
 export async function deleteAllMovies() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user || user.email !== 'admin@nthera.vn') return { success: false }
+  if (!user || user.email !== 'admin@nthera.vn') return { success: false, message: 'Unauthorized' }
 
-  const { error } = await supabase.from('movies').delete().filter('id', 'not.is', null) // Trick to delete all
+  // Để xoá được Movies mà không bị lỗi Khoá ngoại (Foreign Key), cần xoá các bảng phụ thuộc trước
+  await supabase.from('ticket_seats').delete().not('ticket_id', 'is', null)
+  await supabase.from('tickets').delete().not('id', 'is', null)
+  await supabase.from('showtimes').delete().not('id', 'is', null)
+
+  const { error } = await supabase.from('movies').delete().not('id', 'is', null)
+  
+  if (error) {
+    return { success: false, message: error.message }
+  }
+
   revalidatePath('/admin/movies')
+  revalidatePath('/admin/showtimes')
   revalidatePath('/')
   
-  return { success: !error }
+  return { success: true }
 }
