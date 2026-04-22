@@ -38,3 +38,12 @@ body {
 .bg-cinematic {
   background: linear-gradient(135deg, #0f172a 0%, #17102e 100%);
 }
+
+@keyframes shimmer {
+  0% { transform: translateX(-150%) skewX(-45deg); }
+  100% { transform: translateX(200%) skewX(-45deg); }
+}
+
+.text-glow-neon {
+  text-shadow: 0 0 15px rgba(0, 242, 254, 0.6), 0 0 30px rgba(79, 172, 254, 0.4);
+}

@@ -37,7 +37,7 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-cinematic text-slate-100">
         <GlobalHeader user={user} />
-        <main className="flex-1 mt-20">
+        <main className="flex-1 mt-[110px]">
           {children}
         </main>
         <AIChatbot />

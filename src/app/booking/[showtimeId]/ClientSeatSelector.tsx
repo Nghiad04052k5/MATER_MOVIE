@@ -160,13 +160,13 @@ export default function ClientSeatSelector({ showtime, seats, bookedSeatIds }: {
               <div className="absolute top-0 right-0 p-4">
                  {/* Nút giả lập gọi Webhook nhanh cho Giám khảo test */}
                  <button onClick={async () => {
-                    await fetch('/api/webhooks/payment', {
+                    await fetch('/api/mock-payment', {
                        method: 'POST',
                        headers: { 'Content-Type': 'application/json' },
-                       body: JSON.stringify({ ticket_id: currentTicketId, status: 'PAID' })
+                       body: JSON.stringify({ ticket_id: currentTicketId })
                     })
-                 }} className="px-3 py-1 bg-green-500/20 text-green-400 text-xs rounded-full border border-green-500/50 hover:bg-green-500/30">
-                    [Admin Test] Giả lập Khách chuyển khoản
+                 }} className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold rounded-xl border border-green-400 shadow-[0_0_15px_rgba(34,197,94,0.4)] hover:shadow-[0_0_25px_rgba(34,197,94,0.6)] animate-pulse hover:animate-none transition-all">
+                    Thanh Toán Demo (Click Here)
                  </button>
               </div>
 
