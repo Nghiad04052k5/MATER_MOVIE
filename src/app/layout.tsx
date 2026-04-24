@@ -30,13 +30,23 @@ export default async function RootLayout({
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
+  let ticketCount = 0;
+  if (user) {
+    const { count } = await supabase
+      .from('tickets')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .in('status', ['PAID', 'PENDING']);
+    ticketCount = count || 0;
+  }
+
   return (
     <html
       lang="vi"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
       <body className="min-h-full flex flex-col bg-cinematic text-slate-100">
-        <GlobalHeader user={user} />
+        <GlobalHeader user={user} ticketCount={ticketCount} />
         <main className="flex-1 mt-[110px]">
           {children}
         </main>

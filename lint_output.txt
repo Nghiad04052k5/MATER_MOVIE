@@ -1,0 +1,67 @@
+
+> n_thera_cinema@0.1.0 lint
+> eslint
+
+
+C:\Users\daomi\.gemini\antigravity\scratch\n_thera_cinema\src\app\admin\movies\ClientPage.tsx
+  5:34  warning  'Star' is defined but never used          @typescript-eslint/no-unused-vars
+  5:40  warning  'Clock' is defined but never used         @typescript-eslint/no-unused-vars
+  8:43  warning  'movies' is defined but never used        @typescript-eslint/no-unused-vars
+  8:64  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\daomi\.gemini\antigravity\scratch\n_thera_cinema\src\app\admin\movies\actions.ts
+  25:69  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  31:53  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  34:16  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  65:17  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\daomi\.gemini\antigravity\scratch\n_thera_cinema\src\app\admin\movies\page.tsx
+  26:64  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                          react/no-unescaped-entities
+  26:82  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                          react/no-unescaped-entities
+  33:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\daomi\.gemini\antigravity\scratch\n_thera_cinema\src\app\api\chat\route.ts
+  25:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\daomi\.gemini\antigravity\scratch\n_thera_cinema\src\app\api\webhooks\payment\route.ts
+  26:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\daomi\.gemini\antigravity\scratch\n_thera_cinema\src\app\booking\[showtimeId]\ClientSeatSelector.tsx
+   27:19  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  128:6   error    React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?                                                                                              react-hooks/rules-of-hooks
+  134:23  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  174:18  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\daomi\.gemini\antigravity\scratch\n_thera_cinema\src\app\booking\[showtimeId]\page.tsx
+   3:8   warning  'Link' is defined but never used                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+  49:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\daomi\.gemini\antigravity\scratch\n_thera_cinema\src\app\movie\[id]\page.tsx
+   12:31  warning  'movieError' is assigned a value but never used                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   33:40  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   34:27  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   46:14  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+   51:14  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  104:42  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+
+C:\Users\daomi\.gemini\antigravity\scratch\n_thera_cinema\src\app\my-tickets\page.tsx
+   4:18  warning  'MapPin' is defined but never used                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  80:32  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  92:30  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\daomi\.gemini\antigravity\scratch\n_thera_cinema\src\app\page.tsx
+  41:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\daomi\.gemini\antigravity\scratch\n_thera_cinema\src\components\AIChatbot.tsx
+   4:39  warning  'User' is defined but never used   @typescript-eslint/no-unused-vars
+  39:15  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\daomi\.gemini\antigravity\scratch\n_thera_cinema\src\utils\supabase\middleware.ts
+  18:48  warning  'options' is defined but never used        @typescript-eslint/no-unused-vars
+  32:13  warning  'user' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\daomi\.gemini\antigravity\scratch\n_thera_cinema\src\utils\supabase\server.ts
+  20:20  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 34 problems (14 errors, 20 warnings)
+

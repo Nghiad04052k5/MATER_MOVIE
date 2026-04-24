@@ -6,7 +6,7 @@ import { logout } from "@/app/login/actions";
 import { User } from "@supabase/supabase-js";
 import { Bell, HelpCircle, Globe, Search, Ticket, MessageCircle, Camera } from 'lucide-react'
 
-export default function GlobalHeader({ user }: { user: User | null }) {
+export default function GlobalHeader({ user, ticketCount = 0 }: { user: User | null; ticketCount?: number }) {
   const pathname = usePathname();
 
   if (pathname.startsWith('/admin') || pathname.startsWith('/staff')) {
@@ -74,25 +74,26 @@ export default function GlobalHeader({ user }: { user: User | null }) {
 
          {/* Thanh Tìm Kiếm + Tags (Middle) */}
          <div className="flex-1 max-w-4xl mx-auto flex flex-col gap-1.5 w-full">
-            <div className="flex w-full bg-white rounded-md overflow-hidden border-2 border-transparent focus-within:border-[#00f2fe] shadow-inner transition-colors">
+            <form action="/search" method="GET" className="flex w-full bg-white rounded-md overflow-hidden border-2 border-transparent focus-within:border-[#00f2fe] shadow-inner transition-colors">
                <input 
                   type="text" 
+                  name="q"
                   placeholder="Tìm kiếm phim, rạp chiếu, suất chiếu Ưu đãi 0Đ ngay hôm nay!" 
                   className="flex-1 bg-transparent px-4 py-2.5 text-black placeholder-slate-500 focus:outline-none text-sm font-medium"
                />
-               <button className="bg-gradient-to-r from-[#00f2fe] to-[#4facfe] text-black px-6 md:px-8 py-2.5 flex items-center justify-center hover:opacity-90 transition-opacity m-0.5 rounded shadow-sm">
+               <button type="submit" className="bg-gradient-to-r from-[#00f2fe] to-[#4facfe] text-black px-6 md:px-8 py-2.5 flex items-center justify-center hover:opacity-90 transition-opacity m-0.5 rounded shadow-sm">
                   <Search size={18} className="font-bold" />
                </button>
-            </div>
+            </form>
             
             {/* Quick Keyword / Tags */}
             <div className="flex items-center gap-4 text-[10px] md:text-xs text-slate-400 overflow-x-auto whitespace-nowrap scrollbar-hide px-1">
-               <Link href="#" className="hover:text-[#00f2fe] transition-colors">Vé siêu rẻ Shopee</Link>
-               <Link href="#" className="hover:text-[#00f2fe] transition-colors">Lật Mặt 7: Một Điều Ước</Link>
-               <Link href="#" className="hover:text-[#00f2fe] transition-colors">Phim Hot Godzilla</Link>
-               <Link href="#" className="hover:text-[#00f2fe] transition-colors">Dune 2 Hành Tinh Cát</Link>
-               <Link href="#" className="hover:text-[#00f2fe] transition-colors">Mai (Trấn Thành)</Link>
-               <Link href="#" className="hover:text-[#00f2fe] transition-colors">Combo Bắp nước 0Đ</Link>
+               <Link href="/search?q=Shopee" className="hover:text-[#00f2fe] transition-colors">Vé siêu rẻ Shopee</Link>
+               <Link href="/search?q=lật mặt" className="hover:text-[#00f2fe] transition-colors">Lật Mặt 7: Một Điều Ước</Link>
+               <Link href="/search?q=godzilla" className="hover:text-[#00f2fe] transition-colors">Phim Hot Godzilla</Link>
+               <Link href="/search?q=dune" className="hover:text-[#00f2fe] transition-colors">Dune 2 Hành Tinh Cát</Link>
+               <Link href="/search?q=mai" className="hover:text-[#00f2fe] transition-colors">Mai (Trấn Thành)</Link>
+               <Link href="/search?q=Bắp" className="hover:text-[#00f2fe] transition-colors">Combo Bắp nước 0Đ</Link>
             </div>
          </div>
 
@@ -100,9 +101,9 @@ export default function GlobalHeader({ user }: { user: User | null }) {
          <div className="shrink-0 flex items-center justify-center md:px-4">
             <Link href={user ? "/my-tickets" : "/login"} className="relative group flex items-center justify-center">
                <Ticket size={32} className="text-white group-hover:text-[#00f2fe] transition-colors" />
-               {user && (
+               {user && ticketCount > 0 && (
                  <span className="absolute -top-2 -right-3 w-5 h-5 rounded-full bg-red-500 text-white border-2 border-[#0a0f1c] text-xs font-black flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                    3
+                    {ticketCount > 9 ? '9+' : ticketCount}
                  </span>
                )}
             </Link>
