@@ -114,8 +114,12 @@ export default async function AdminLayout({
         </header>
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-auto bg-gradient-to-br from-[#0a0f1c] to-[#121b2b]">
-          <div className="p-8 pb-20">
+        <main className="flex-1 overflow-auto bg-gradient-to-br from-[#0a0f1c] to-[#121b2b] bg-fixed relative">
+          {/* Global Ambient Glows for Admin */}
+          <div className="fixed top-0 right-0 w-96 h-96 bg-[#00f2fe]/5 blur-[120px] rounded-full pointer-events-none -z-0"></div>
+          <div className="fixed bottom-0 left-[250px] w-96 h-96 bg-purple-500/5 blur-[120px] rounded-full pointer-events-none -z-0"></div>
+          
+          <div className="p-8 pb-20 relative z-10">
              {children}
           </div>
         </main>

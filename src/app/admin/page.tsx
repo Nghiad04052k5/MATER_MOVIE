@@ -3,9 +3,7 @@ import { Users, Ticket, Film, Activity, TrendingUp } from 'lucide-react'
 export default function AdminDashboard() {
   return (
     <div className="space-y-8 relative">
-       {/* Ambient Glow */}
-       <div className="absolute top-0 right-0 w-96 h-96 bg-[#00f2fe]/10 blur-[120px] rounded-full pointer-events-none -z-10"></div>
-       <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/10 blur-[120px] rounded-full pointer-events-none -z-10"></div>
+       {/* Ambient glow moved to layout */}
 
        <div>
          <h1 className="text-3xl font-black text-white flex items-center gap-3">

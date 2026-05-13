@@ -1,6 +1,7 @@
 import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
 import { PlayCircle, Ticket, Star, Clock, CalendarDays } from 'lucide-react';
+import PromoPopup from '@/components/PromoPopup';
 
 export const revalidate = 0; // Luôn nạp dữ liệu mới nhất từ DB
 
@@ -38,6 +39,7 @@ export default async function Home() {
 
   return (
     <div className="w-full flex-1 mb-20 animate-in fade-in duration-1000">
+      <PromoPopup />
       
       {/* 🎬 HERO SECTION */}
       <section className="relative w-full h-[70vh] min-h-[500px] lg:h-[85vh] flex items-center justify-start overflow-hidden">

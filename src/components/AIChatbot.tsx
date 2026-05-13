@@ -165,7 +165,7 @@ export default function AIChatbot() {
                       <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                          <div className={`max-w-[85%] rounded-2xl p-3 text-sm flex gap-2 ${msg.role === 'user' ? 'bg-[#00f2fe]/20 text-[#00f2fe] rounded-tr-sm border border-[#00f2fe]/30' : 'bg-slate-800 text-slate-200 rounded-tl-sm border border-slate-700'}`}>
                             {msg.role === 'assistant' && <Bot size={14} className="mt-0.5 shrink-0 opacity-70" />}
-                            <span className="leading-relaxed whitespace-pre-wrap">{msg.content}</span>
+                            <span className="leading-relaxed whitespace-pre-wrap">{msg.content.replace(/\*\*/g, '')}</span>
                          </div>
                       </div>
                    ))}
