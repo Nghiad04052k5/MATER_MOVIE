@@ -72,6 +72,13 @@ export default function GlobalHeader({ user, ticketCount = 0 }: { user: User | n
                </h1>
             </Link>
 
+            {/* Main Menu */}
+            <nav className="hidden lg:flex items-center gap-6 font-bold text-sm tracking-wider uppercase shrink-0">
+               <Link href="/" className="hover:text-[#00f2fe] transition-colors text-slate-200">Phim Đang Chiếu</Link>
+               <Link href="/cinemas" className="hover:text-[#00f2fe] transition-colors text-slate-200">Hệ Thống Rạp</Link>
+               <Link href="/offers" className="hover:text-[#00f2fe] transition-colors text-slate-200">Khuyến Mãi</Link>
+            </nav>
+
             {/* Thanh Tìm Kiếm + Tags (Middle) */}
             <div className="flex-1 max-w-4xl mx-auto flex flex-col gap-1.5 w-full">
                <form action="/search" method="GET" className="flex w-full bg-white rounded-md overflow-hidden border-2 border-transparent focus-within:border-[#00f2fe] shadow-inner transition-colors">

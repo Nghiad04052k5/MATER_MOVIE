@@ -2,6 +2,7 @@ import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
 import { PlayCircle, Ticket, Star, Clock, CalendarDays } from 'lucide-react';
 import PromoPopup from '@/components/PromoPopup';
+import TrailerModal from '@/components/TrailerModal';
 
 export const revalidate = 0; // Luôn nạp dữ liệu mới nhất từ DB
 
@@ -89,9 +90,12 @@ export default async function Home() {
                  <Link href={`/movie/${heroMovie.id}`} className="flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-[#00f2fe] to-[#4facfe] text-black font-black uppercase tracking-widest rounded-xl hover:scale-105 hover:shadow-[0_0_40px_rgba(0,242,254,0.6)] transition-all duration-300 ring-4 ring-[#00f2fe]/20">
                     <Ticket size={20} /> ĐẶT VÉ NGAY
                  </Link>
-                 <button className="flex items-center justify-center gap-2 px-8 py-4 bg-white/5 border border-white/10 text-white font-bold uppercase tracking-widest rounded-xl hover:bg-white/10 hover:border-white/30 backdrop-blur-md transition-all duration-300 group">
+                 <TrailerModal 
+                    trailerUrl={heroMovie.trailer_url} 
+                    className="flex items-center justify-center gap-2 px-8 py-4 bg-white/5 border border-white/10 text-white font-bold uppercase tracking-widest rounded-xl hover:bg-white/10 hover:border-white/30 backdrop-blur-md transition-all duration-300 group"
+                 >
                     <PlayCircle size={20} className="group-hover:text-[#00f2fe] transition-colors" /> Xem Trailer
-                 </button>
+                 </TrailerModal>
               </div>
            </div>
 

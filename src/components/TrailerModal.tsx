@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { PlayCircle, X } from 'lucide-react'
 
-export default function TrailerModal({ trailerUrl }: { trailerUrl?: string }) {
+export default function TrailerModal({ trailerUrl, className, children }: { trailerUrl?: string; className?: string; children?: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false)
 
   // Chuyển đổi link youtube thông thường sang dạng embed nếu cần
@@ -41,9 +41,9 @@ export default function TrailerModal({ trailerUrl }: { trailerUrl?: string }) {
     <>
       <button 
         onClick={handleOpen}
-        className="flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-[#00f2fe] to-[#4facfe] text-black font-black uppercase tracking-wider hover:scale-105 transition-transform shadow-[0_0_25px_rgba(0,242,254,0.3)]"
+        className={className || "flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-[#00f2fe] to-[#4facfe] text-black font-black uppercase tracking-wider hover:scale-105 transition-transform shadow-[0_0_25px_rgba(0,242,254,0.3)]"}
       >
-        <PlayCircle /> Xem Trailer
+        {children || <><PlayCircle /> Xem Trailer</>}
       </button>
 
       {isOpen && (

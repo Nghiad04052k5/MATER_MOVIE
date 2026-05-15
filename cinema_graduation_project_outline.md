@@ -1,4 +1,4 @@
-# ĐỀ CƯƠNG ĐỒ ÁN TỐT NGHIỆP: HỆ SINH THÁI RẠP CHIẾU PHIM THÔNG MINH N_THERA
+# ĐỀ CƯƠNG ĐỒ ÁN TỐT NGHIỆP: HỆ THỐNG RẠP CHIẾU PHIM THÔNG MINH N_THERA
 
 > [!NOTE]
 > Đây là bản Báo cáo Tổng hợp (Master File) hoàn chỉnh nhất. Tài liệu này kết hợp cấu trúc nghiệp vụ chuẩn mực của hệ thống rạp phim truyền thống, cùng với những công nghệ giải quyết triệt để các khiếm khuyết về UX/UI, Thanh toán, Realtime và AI.
