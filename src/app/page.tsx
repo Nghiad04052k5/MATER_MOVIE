@@ -111,8 +111,49 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* 🎁 ƯU ĐÃI ĐẶC BIỆT (ADS / PROMOS) */}
+      <section className="max-w-7xl mx-auto px-6 mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="relative rounded-3xl overflow-hidden h-48 md:h-56 group cursor-pointer border border-white/10 shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-[#00f2fe] opacity-80 group-hover:opacity-100 transition-opacity"></div>
+            <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1000&auto=format&fit=crop" alt="Promo" className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-40 group-hover:scale-110 transition-transform duration-700" />
+            <div className="relative z-10 p-6 flex flex-col h-full justify-between">
+              <span className="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full w-fit backdrop-blur-md shadow-sm border border-white/20">THÀNH VIÊN MỚI</span>
+              <div>
+                <h3 className="text-2xl md:text-3xl font-black text-white uppercase drop-shadow-md tracking-tight leading-none mb-2">Giảm 50%<br/><span className="text-[#00f2fe]">Vé Thứ 2</span></h3>
+                <p className="text-slate-100 text-sm font-medium">Áp dụng mọi suất chiếu 2D/3D</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative rounded-3xl overflow-hidden h-48 md:h-56 group cursor-pointer border border-white/10 shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-yellow-400 opacity-80 group-hover:opacity-100 transition-opacity"></div>
+            <img src="https://images.unsplash.com/photo-1585647347384-2593bc35786b?q=80&w=1000&auto=format&fit=crop" alt="Popcorn" className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-40 group-hover:scale-110 transition-transform duration-700" />
+            <div className="relative z-10 p-6 flex flex-col h-full justify-between">
+              <span className="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full w-fit backdrop-blur-md shadow-sm border border-white/20">COMBO BẮP NƯỚC</span>
+              <div>
+                <h3 className="text-2xl md:text-3xl font-black text-white uppercase drop-shadow-md tracking-tight leading-none mb-2">Giảm 30%<br/><span className="text-yellow-200">Đồ Ăn</span></h3>
+                <p className="text-slate-100 text-sm font-medium">Khi đặt trước qua ứng dụng</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative rounded-3xl overflow-hidden h-48 md:h-56 group cursor-pointer border border-white/10 shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-r from-rose-500 to-pink-500 opacity-80 group-hover:opacity-100 transition-opacity"></div>
+            <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?q=80&w=1000&auto=format&fit=crop" alt="VIP" className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-40 group-hover:scale-110 transition-transform duration-700" />
+            <div className="relative z-10 p-6 flex flex-col h-full justify-between">
+              <span className="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full w-fit backdrop-blur-md shadow-sm border border-white/20">ĐẶC QUYỀN VIP</span>
+              <div>
+                <h3 className="text-2xl md:text-3xl font-black text-white uppercase drop-shadow-md tracking-tight leading-none mb-2">Đồng Giá<br/><span className="text-pink-200">99k</span></h3>
+                <p className="text-slate-100 text-sm font-medium">Trải nghiệm ghế da cao cấp</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 🎞️ NOW SHOWING GRID */}
-      <section className="max-w-7xl mx-auto px-6 mt-12 md:mt-24">
+      <section className="max-w-7xl mx-auto px-6 mt-16 md:mt-24">
         <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-800 pb-6">
           <div>
              <h2 className="text-3xl lg:text-4xl font-black text-white uppercase tracking-wider flex items-center gap-3">
@@ -176,6 +217,69 @@ export default async function Home() {
               </div>
             </Link>
           ))}
+        </div>
+      </section>
+
+      {/* 🎬 TRAILER NỔI BẬT */}
+      <section className="max-w-7xl mx-auto px-6 mt-16 md:mt-24">
+        <div className="mb-10 border-b border-slate-800 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <h2 className="text-3xl lg:text-4xl font-black text-white uppercase tracking-wider flex items-center gap-3">
+               <span className="w-2 h-10 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full inline-block shadow-[0_0_15px_rgba(236,72,153,0.5)]"></span>
+               TRAILER ĐÁNG CHÚ Ý
+            </h2>
+            <p className="text-slate-400 font-medium mt-2 ml-5">Hé lộ những bom tấn sắp tới tại N_thera.</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {gridMovies.slice(0, 3).map((movie: any) => (
+             <div key={`trailer-${movie.id}`} className="relative rounded-3xl overflow-hidden aspect-video group border border-slate-800 hover:border-pink-500/50 transition-colors shadow-lg hover:shadow-[0_10px_40px_rgba(236,72,153,0.2)]">
+               <img src={movie.poster_url} alt={movie.title} className="w-full h-full object-cover opacity-70 group-hover:opacity-50 transition-opacity duration-500 group-hover:scale-105" />
+               <div className="absolute inset-0 flex items-center justify-center">
+                  <TrailerModal trailerUrl={movie.trailer_url} className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:scale-110 transition-all duration-300 border border-white/20 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+                    <PlayCircle size={32} className="ml-1 opacity-90" />
+                  </TrailerModal>
+               </div>
+               <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black via-black/80 to-transparent">
+                  <h3 className="text-white font-bold text-xl truncate mb-1">{movie.title}</h3>
+                  <p className="text-pink-400 text-xs font-bold uppercase tracking-wider">Trailer chính thức</p>
+               </div>
+             </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ✨ TÍNH NĂNG ĐẶC BIỆT / TRẢI NGHIỆM */}
+      <section className="max-w-7xl mx-auto px-6 mt-16 md:mt-24 mb-20">
+        <div className="mb-10 border-b border-slate-800 pb-6">
+          <h2 className="text-3xl lg:text-4xl font-black text-white uppercase tracking-wider flex items-center gap-3">
+             <span className="w-2 h-10 bg-gradient-to-b from-yellow-400 to-orange-500 rounded-full inline-block shadow-[0_0_15px_rgba(250,204,21,0.5)]"></span>
+             TRẢI NGHIỆM ĐỈNH CAO
+          </h2>
+          <p className="text-slate-400 font-medium mt-2 ml-5">Nâng tầm cảm xúc điện ảnh với công nghệ tiên tiến nhất.</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+           <div className="bg-slate-900/40 border border-slate-800/80 hover:border-[#00f2fe]/40 rounded-3xl p-8 hover:bg-slate-900/80 transition-all duration-500 group flex flex-col sm:flex-row items-center gap-8 text-center sm:text-left shadow-lg hover:shadow-[0_10px_40px_rgba(0,242,254,0.15)]">
+              <div className="w-28 h-28 shrink-0 rounded-3xl bg-gradient-to-br from-blue-600 to-[#00f2fe] flex items-center justify-center text-white transform group-hover:rotate-[10deg] group-hover:scale-110 transition-transform duration-500 shadow-[0_0_30px_rgba(0,242,254,0.4)] relative overflow-hidden">
+                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] mix-blend-overlay opacity-50"></div>
+                 <div className="text-4xl font-black italic relative z-10">IMAX</div>
+              </div>
+              <div>
+                 <h3 className="text-2xl font-black text-white mb-3 group-hover:text-[#00f2fe] transition-colors">Công Nghệ IMAX 3D</h3>
+                 <p className="text-slate-400 leading-relaxed">Trải nghiệm hình ảnh sắc nét vượt trội với màn hình cong khổng lồ. Hệ thống âm thanh vòm sống động đưa bạn vào thế giới phim một cách chân thực nhất.</p>
+              </div>
+           </div>
+
+           <div className="bg-slate-900/40 border border-slate-800/80 hover:border-pink-500/40 rounded-3xl p-8 hover:bg-slate-900/80 transition-all duration-500 group flex flex-col sm:flex-row items-center gap-8 text-center sm:text-left shadow-lg hover:shadow-[0_10px_40px_rgba(236,72,153,0.15)]">
+              <div className="w-28 h-28 shrink-0 rounded-3xl bg-gradient-to-br from-purple-600 to-pink-500 flex items-center justify-center text-white transform group-hover:-rotate-[10deg] group-hover:scale-110 transition-transform duration-500 shadow-[0_0_30px_rgba(236,72,153,0.4)] relative overflow-hidden">
+                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] mix-blend-overlay opacity-50"></div>
+                 <div className="text-4xl font-black relative z-10">VIP</div>
+              </div>
+              <div>
+                 <h3 className="text-2xl font-black text-white mb-3 group-hover:text-pink-400 transition-colors">Phòng Chiếu First Class</h3>
+                 <p className="text-slate-400 leading-relaxed">Ghế da hạng thương gia cao cấp có thể ngả 180 độ, tích hợp sạc không dây và phục vụ ẩm thực tận ghế. Tận hưởng sự riêng tư và đẳng cấp bậc nhất.</p>
+              </div>
+           </div>
         </div>
       </section>
       
