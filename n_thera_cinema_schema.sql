@@ -77,3 +77,13 @@ CREATE TABLE public.ticket_seats (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
     UNIQUE(showtime_id, seat_id) -- Điểm cốt lõi: 1 Ghế trong 1 Suất Chiếu chỉ được tồn tại 1 lần duy nhất trong bảng này.
 );
+  
+-- B?ng 8: Th�ng b�o (Notifications)  
+CREATE TABLE public.notifications (  
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,  
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,  
+    title VARCHAR(255) NOT NULL,  
+    description TEXT,  
+    is_read BOOLEAN DEFAULT false,  
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())  
+); 

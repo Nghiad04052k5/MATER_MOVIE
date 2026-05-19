@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     // Query active movies
     const { data: movies } = await supabase
       .from('movies')
-      .select('title, rating, duration_min')
+      .select('title, rating, duration_mins')
       .order('created_at', { ascending: false })
       .limit(5)
 
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
     let contextText = ''
     if (movies && movies.length > 0) {
-        contextText += `Danh sách phim đang HOT tại rạp: ` + movies.map(m => `${m.title} (${m.duration_min} phút, điểm: ${m.rating})`).join(', ') + `. `
+        contextText += `Danh sách phim đang HOT tại rạp: ` + movies.map(m => `${m.title} (${m.duration_mins} phút, điểm: ${m.rating})`).join(', ') + `. `
     }
     if (showtimes && showtimes.length > 0) {
         contextText += `Suất chiếu sắp tới: ` + showtimes.map((st: any) => {

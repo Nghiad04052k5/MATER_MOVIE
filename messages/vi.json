@@ -1,0 +1,19 @@
+{
+  "Header": {
+    "partnerChannel": "Kênh Đối Tác",
+    "becomePartner": "Trở thành Đối tác N_thera",
+    "downloadApp": "Tải ứng dụng",
+    "connect": "Kết nối",
+    "notifications": "Thông Báo",
+    "support": "Hỗ Trợ",
+    "login": "Đăng Nhập",
+    "register": "Đăng Ký",
+    "logout": "Đăng Xuất",
+    "nowShowing": "Phim Đang Chiếu",
+    "cinemas": "Hệ Thống Rạp",
+    "offers": "Khuyến Mãi",
+    "searchPlaceholder": "Tìm kiếm phim, rạp chiếu, suất chiếu Ưu đãi 0Đ ngay hôm nay!",
+    "admin": "Quản trị",
+    "scan": "Quét vé"
+  }
+}

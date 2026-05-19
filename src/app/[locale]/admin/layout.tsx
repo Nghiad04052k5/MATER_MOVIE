@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
 import { LayoutDashboard, Film, MonitorPlay, Ticket, Settings, Bell, ChevronDown, UserCircle, LogOut } from 'lucide-react'
-import { logout } from '@/app/login/actions'
+import { logout } from '@/app/[locale]/login/actions'
 
 export default async function AdminLayout({
   children,

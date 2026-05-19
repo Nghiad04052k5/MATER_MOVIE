@@ -1,0 +1,19 @@
+{
+  "Header": {
+    "partnerChannel": "Partner",
+    "becomePartner": "Become a Partner",
+    "downloadApp": "Download App",
+    "connect": "Connect",
+    "notifications": "Notifications",
+    "support": "Support",
+    "login": "Login",
+    "register": "Sign Up",
+    "logout": "Logout",
+    "nowShowing": "Now Showing",
+    "cinemas": "Cinemas",
+    "offers": "Offers",
+    "searchPlaceholder": "Search movies, cinemas, offers today!",
+    "admin": "Admin",
+    "scan": "Scan Tickets"
+  }
+}

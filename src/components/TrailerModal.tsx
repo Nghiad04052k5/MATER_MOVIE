@@ -1,10 +1,16 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { PlayCircle, X } from 'lucide-react'
 
 export default function TrailerModal({ trailerUrl, className, children }: { trailerUrl?: string; className?: string; children?: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Chuyển đổi link youtube thông thường sang dạng embed nếu cần
   const getEmbedUrl = (url?: string) => {
@@ -46,8 +52,8 @@ export default function TrailerModal({ trailerUrl, className, children }: { trai
         {children || <><PlayCircle /> Xem Trailer</>}
       </button>
 
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+      {isOpen && mounted && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6">
           {/* Lớp nền mờ */}
           <div 
             className="absolute inset-0 bg-black/90 backdrop-blur-sm" 
@@ -72,7 +78,8 @@ export default function TrailerModal({ trailerUrl, className, children }: { trai
                 allowFullScreen
              ></iframe>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )

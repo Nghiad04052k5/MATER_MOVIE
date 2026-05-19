@@ -74,7 +74,7 @@ export default async function Home() {
                  </div>
                  <div className="w-1.5 h-1.5 rounded-full bg-slate-600"></div>
                  <div className="flex items-center gap-1.5 text-blue-200">
-                    <Clock size={16} className="text-[#00f2fe]" /> {heroMovie.duration_min} Phút
+                    <Clock size={16} className="text-[#00f2fe]" /> {heroMovie.duration_mins} Phút
                  </div>
                  <div className="w-1.5 h-1.5 rounded-full bg-slate-600"></div>
                  <div className="flex items-center gap-1.5 text-purple-200">
@@ -201,7 +201,7 @@ export default async function Home() {
               <div className="p-5 flex-1 flex flex-col justify-end absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-[var(--background)] via-[var(--background)]/90 to-transparent">
                 <h3 className="font-bold text-slate-100 text-lg leading-tight mb-2 group-hover:text-[#00f2fe] transition-colors drop-shadow-md">{movie.title}</h3>
                 <p className="text-xs text-slate-400 font-medium flex items-center gap-1.5 mt-auto bg-white/5 w-fit px-2 py-1 rounded-md border border-white/5">
-                   <Clock size={12} className="text-[#00f2fe]" /> {movie.duration_min} Phút
+                   <Clock size={12} className="text-[#00f2fe]" /> {movie.duration_mins} Phút
                 </p>
               </div>
 
