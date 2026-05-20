@@ -15,5 +15,13 @@
     "searchPlaceholder": "Tìm kiếm phim, rạp chiếu, suất chiếu Ưu đãi 0Đ ngay hôm nay!",
     "admin": "Quản trị",
     "scan": "Quét vé"
+  },
+  "Login": {
+    "subtitle": "Hệ thống Rạp chiếu phim Thông minh",
+    "emailLabel": "Tên đăng nhập / Email",
+    "emailPlaceholder": "admin hoặc email...",
+    "passwordLabel": "Mật khẩu",
+    "loginBtn": "Đăng Nhập",
+    "signupBtn": "Đăng ký tài khoản"
   }
 }

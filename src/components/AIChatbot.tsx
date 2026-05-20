@@ -15,47 +15,69 @@ export default function AIChatbot() {
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
+  const [history, setHistory] = useState<string[]>([])
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  // Tải lịch sử chat
+  // Tải lịch sử chat và xử lý reset mỗi ngày
   useEffect(() => {
-     const saved = localStorage.getItem('nthera_chat_history')
+     const today = new Date().toDateString()
+     const saved = localStorage.getItem('nthera_chat_v3')
+     
      if (saved) {
         try {
-           setMessages(JSON.parse(saved))
+           const data = JSON.parse(saved)
+           if (data.lastDate === today) {
+              // Cùng một ngày -> Giữ nguyên phiên chat
+              setMessages(data.activeSession || defaultMessages)
+              setHistory(data.history || [])
+           } else {
+              // Sang ngày mới -> Reset chat chính, lưu lịch sử
+              setMessages(defaultMessages)
+              setHistory(data.history || [])
+              localStorage.setItem('nthera_chat_v3', JSON.stringify({
+                 lastDate: today,
+                 activeSession: defaultMessages,
+                 history: data.history || []
+              }))
+           }
         } catch(e) {}
+     } else {
+        // Thử migrate dữ liệu cũ nếu có
+        const oldSaved = localStorage.getItem('nthera_chat_history')
+        if (oldSaved) {
+           try {
+              const oldMsgs = JSON.parse(oldSaved)
+              const oldQs = oldMsgs.filter((m: any) => m.role === 'user').map((m: any) => m.content)
+              setHistory(oldQs)
+           } catch(e) {}
+           localStorage.removeItem('nthera_chat_history')
+        }
      }
   }, [])
 
-  // Cuộn & Lưu lịch sử chat
+  // Cuộn & Lưu lịch sử chat mỗi khi có thay đổi
   useEffect(() => {
      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-     if (messages.length > 1) {
-        localStorage.setItem('nthera_chat_history', JSON.stringify(messages))
-     }
-  }, [messages, isOpen])
+     
+     // Chỉ lưu nếu đã mount xong và có thay đổi
+     const today = new Date().toDateString()
+     localStorage.setItem('nthera_chat_v3', JSON.stringify({
+        lastDate: today,
+        activeSession: messages,
+        history: history
+     }))
+  }, [messages, history, isOpen])
 
   const clearHistory = () => {
-     setMessages(defaultMessages)
-     localStorage.removeItem('nthera_chat_history')
+     if (confirm('Bạn có chắc chắn muốn xóa toàn bộ lịch sử hỏi đáp?')) {
+        setMessages(defaultMessages)
+        setHistory([])
+        localStorage.removeItem('nthera_chat_v3')
+     }
   }
 
   const handleDeleteQuestion = (content: string) => {
-     setMessages(prev => {
-        const idx = prev.findIndex(m => m.role === 'user' && m.content === content)
-        if (idx !== -1) {
-           const newMsgs = [...prev]
-           newMsgs.splice(idx, 1) // Xóa câu hỏi user
-           // Nếu câu tiếp theo là câu trả lời của bot thì xóa luôn
-           if (newMsgs[idx] && newMsgs[idx].role === 'assistant') {
-              newMsgs.splice(idx, 1)
-           }
-           // Cập nhật localStorage ngay
-           localStorage.setItem('nthera_chat_history', JSON.stringify(newMsgs))
-           return newMsgs
-        }
-        return prev
-     })
+     setHistory(prev => prev.filter(q => q !== content))
   }
 
   const handleSend = async (e?: React.FormEvent, textOverride?: string) => {
@@ -66,6 +88,10 @@ export default function AIChatbot() {
      const userMsg = payloadText
      setInput('')
      setMessages(prev => [...prev, { role: 'user', content: userMsg }])
+     setHistory(prev => {
+        if (!prev.includes(userMsg)) return [...prev, userMsg]
+        return prev
+     })
      setIsLoading(true)
 
      try {
@@ -135,26 +161,23 @@ export default function AIChatbot() {
              <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-900/50 rounded-b-2xl">
                 <div className="flex items-center gap-2 text-slate-400 mb-4 pb-2 border-b border-slate-800">
                    <Clock size={16} />
-                   <span className="text-sm font-bold">Các câu hỏi đã hỏi</span>
+                   <span className="text-sm font-bold">Các câu hỏi đã lưu</span>
                 </div>
-                {messages.filter(m => m.role === 'user').length === 0 ? (
+                {history.length === 0 ? (
                    <div className="text-center text-slate-500 text-sm mt-10">Bạn chưa hỏi câu nào.</div>
                 ) : (
-                   messages.map((msg, originalIndex) => {
-                      if (msg.role !== 'user') return null;
-                      return (
-                         <div key={originalIndex} className="bg-slate-800/80 border border-slate-700/50 p-3 rounded-xl flex items-start justify-between gap-3 hover:bg-slate-700/80 transition-colors shadow-sm">
-                            <p className="text-slate-300 text-sm flex-1 leading-relaxed">{msg.content}</p>
-                            <button 
-                               onClick={() => handleDeleteQuestion(msg.content)}
-                               className="text-slate-500 hover:text-red-400 bg-slate-900/50 hover:bg-slate-900 p-2 rounded-lg transition-all"
-                               title="Xóa câu hỏi này"
-                            >
-                               <Trash2 size={14} />
-                            </button>
-                         </div>
-                      )
-                   })
+                   history.map((q, idx) => (
+                      <div key={idx} className="bg-slate-800/80 border border-slate-700/50 p-3 rounded-xl flex items-start justify-between gap-3 hover:bg-slate-700/80 transition-colors shadow-sm">
+                         <p className="text-slate-300 text-sm flex-1 leading-relaxed cursor-pointer hover:text-[#00f2fe]" onClick={() => { setShowHistory(false); handleSend(undefined, q); }}>{q}</p>
+                         <button 
+                            onClick={() => handleDeleteQuestion(q)}
+                            className="text-slate-500 hover:text-red-400 bg-slate-900/50 hover:bg-slate-900 p-2 rounded-lg transition-all shrink-0"
+                            title="Xóa câu hỏi này khỏi lịch sử"
+                         >
+                            <Trash2 size={14} />
+                         </button>
+                      </div>
+                   ))
                 )}
              </div>
           ) : (

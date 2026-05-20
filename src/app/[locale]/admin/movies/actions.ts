@@ -60,8 +60,9 @@ export async function syncTMDBMovies() {
       return { success: false, message: 'Lỗi khi lưu vào Database: ' + error.message }
     }
 
-    revalidatePath('/admin/movies')
-    revalidatePath('/')
+    revalidatePath('/', 'layout')
+    revalidatePath('/[locale]', 'layout')
+    revalidatePath('/[locale]/admin/movies', 'page')
     
     return { success: true, count: mappedMovies.length }
   } catch (err: unknown) {
@@ -85,9 +86,9 @@ export async function deleteAllMovies() {
     return { success: false, message: error.message }
   }
 
-  revalidatePath('/admin/movies')
-  revalidatePath('/admin/showtimes')
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
+  revalidatePath('/[locale]', 'layout')
+  revalidatePath('/[locale]/admin/movies', 'page')
   
   return { success: true }
 }

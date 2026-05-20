@@ -14,7 +14,7 @@ export async function addCinema(formData: FormData) {
   const { error } = await supabase.from('cinemas').insert([{ name, address }])
   if (error) return { success: false, message: error.message }
   
-  revalidatePath('/admin/showtimes')
+  revalidatePath('/', 'layout')
   return { success: true }
 }
 
@@ -62,7 +62,7 @@ export async function addRoom(formData: FormData) {
   
   if (seatError) return { success: false, message: 'Tạo phòng thành công nhưng lỗi sinh ghế: ' + seatError.message }
 
-  revalidatePath('/admin/showtimes')
+  revalidatePath('/', 'layout')
   return { success: true }
 }
 
@@ -80,6 +80,6 @@ export async function addShowtime(formData: FormData) {
 
   if (error) return { success: false, message: error.message }
   
-  revalidatePath('/admin/showtimes')
+  revalidatePath('/', 'layout')
   return { success: true }
 }

@@ -10,11 +10,11 @@ export default async function Home() {
   const supabase = await createClient();
   
   // Lấy danh sách phim từ Database nội bộ
-  const { data: movies, error } = await supabase
+  const { data: allMovies, error } = await supabase
     .from('movies')
     .select('*')
     .order('created_at', { ascending: false })
-    .limit(10); // Lấy 10 phim mới nhất
+    .limit(20);
 
   if (error) {
     return (
@@ -24,7 +24,7 @@ export default async function Home() {
     );
   }
 
-  if (!movies || movies.length === 0) {
+  if (!allMovies || allMovies.length === 0) {
     return (
       <div className="flex flex-col h-[70vh] items-center justify-center p-6">
         <div className="text-center py-20 px-10 bg-slate-900/30 rounded-3xl border border-dashed border-slate-700 backdrop-blur-md">
@@ -35,8 +35,19 @@ export default async function Home() {
     );
   }
 
-  const heroMovie = movies[0]; // Phim hot nhất ở trên cùng
-  const gridMovies = movies;
+  // Lấy các suất chiếu trong tương lai/hiện tại để xác định phim Đang Chiếu
+  const today = new Date().toISOString();
+  const { data: activeShowtimes } = await supabase
+    .from('showtimes')
+    .select('movie_id')
+    .gte('start_time', today);
+
+  const activeMovieIds = new Set(activeShowtimes?.map(st => st.movie_id) || []);
+
+  const nowPlayingMovies = allMovies.filter(m => activeMovieIds.has(m.id));
+  const comingSoonMovies = allMovies.filter(m => !activeMovieIds.has(m.id));
+
+  const heroMovie = nowPlayingMovies.length > 0 ? nowPlayingMovies[0] : allMovies[0];
 
   return (
     <div className="w-full flex-1 mb-20 animate-in fade-in duration-1000">
@@ -153,6 +164,7 @@ export default async function Home() {
       </section>
 
       {/* 🎞️ NOW SHOWING GRID */}
+      {nowPlayingMovies.length > 0 && (
       <section className="max-w-7xl mx-auto px-6 mt-16 md:mt-24">
         <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-800 pb-6">
           <div>
@@ -164,12 +176,12 @@ export default async function Home() {
           </div>
           <div className="hidden sm:flex gap-2 items-center bg-slate-900/50 p-2 rounded-full border border-slate-800">
              <div className="w-3 h-3 rounded-full bg-[#00f2fe] shadow-[0_0_10px_rgba(0,242,254,1)] animate-ping"></div>
-             <span className="text-xs font-bold text-slate-300 uppercase tracking-widest px-2">{gridMovies.length} Phim Online</span>
+             <span className="text-xs font-bold text-slate-300 uppercase tracking-widest px-2">{nowPlayingMovies.length} Phim Đang Chiếu</span>
           </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 gap-y-10">
-          {gridMovies.map((movie: any, idx: number) => (
+          {nowPlayingMovies.map((movie: any, idx: number) => (
             <Link 
                href={`/movie/${movie.id}`} 
                key={movie.id} 
@@ -187,7 +199,7 @@ export default async function Home() {
                 
                 {/* ID/Number Tag */}
                 <div className="absolute top-0 left-0 bg-gradient-to-br from-[#00f2fe] to-[#4facfe] text-black font-black text-sm px-3 py-1 rounded-br-xl shadow-lg z-10">
-                   #{idx + 1}
+                   HOT
                 </div>
 
                 {/* Rating Badge */}
@@ -219,6 +231,71 @@ export default async function Home() {
           ))}
         </div>
       </section>
+      )}
+
+      {/* 🎞️ COMING SOON GRID */}
+      {comingSoonMovies.length > 0 && (
+      <section className="max-w-7xl mx-auto px-6 mt-16 md:mt-24">
+        <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-800 pb-6">
+          <div>
+             <h2 className="text-3xl lg:text-4xl font-black text-white uppercase tracking-wider flex items-center gap-3">
+                <span className="w-2 h-10 bg-gradient-to-b from-slate-500 to-slate-700 rounded-full inline-block shadow-[0_0_15px_rgba(255,255,255,0.1)]"></span>
+                PHIM SẮP CHIẾU
+             </h2>
+             <p className="text-slate-400 font-medium mt-2 ml-5">Đón chờ những siêu phẩm sắp đổ bộ.</p>
+          </div>
+          <div className="hidden sm:flex gap-2 items-center bg-slate-900/50 p-2 rounded-full border border-slate-800">
+             <span className="text-xs font-bold text-slate-300 uppercase tracking-widest px-2">{comingSoonMovies.length} Phim Sắp Tới</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 gap-y-10">
+          {comingSoonMovies.map((movie: any, idx: number) => (
+            <Link 
+               href={`/movie/${movie.id}`} 
+               key={movie.id} 
+               className="group relative rounded-2xl overflow-hidden bg-slate-900/80 border border-slate-800 hover:border-slate-500/50 transition-all duration-500 transform hover:-translate-y-3 cursor-pointer shadow-xl flex flex-col h-full animate-in fade-in slide-in-from-bottom"
+               style={{ animationDelay: `${idx * 100}ms` }}
+            >
+              <div className="relative w-full aspect-[2/3] overflow-hidden bg-black grayscale group-hover:grayscale-0 transition-all duration-700">
+                <img
+                  src={movie.poster_url}
+                  alt={movie.title}
+                  className="object-cover w-full h-full opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-transform duration-700 ease-out"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[var(--background)] via-[var(--background)]/40 to-transparent opacity-90 group-hover:opacity-70 transition-opacity" />
+                
+                <div className="absolute top-0 left-0 bg-slate-700 text-white font-black text-[10px] px-3 py-1 rounded-br-xl shadow-lg z-10 uppercase tracking-widest">
+                   Sắp ra mắt
+                </div>
+
+                <div className="absolute top-3 right-3 bg-[#0f172a]/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 flex items-center gap-1 shadow-md z-10 transition-transform group-hover:scale-110">
+                   <Star size={12} className="text-yellow-400" fill="currentColor" />
+                  <span className="text-xs font-black text-white">{Number(movie.rating).toFixed(1)}</span>
+                </div>
+              </div>
+              
+              <div className="p-5 flex-1 flex flex-col justify-end absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-[var(--background)] via-[var(--background)]/90 to-transparent">
+                <h3 className="font-bold text-slate-100 text-lg leading-tight mb-2 group-hover:text-white transition-colors drop-shadow-md">{movie.title}</h3>
+                <p className="text-xs text-slate-400 font-medium flex items-center gap-1.5 mt-auto bg-white/5 w-fit px-2 py-1 rounded-md border border-white/5">
+                   <CalendarDays size={12} className="text-slate-400" /> Khởi chiếu: {movie.release_date}
+                </p>
+              </div>
+
+              <div className="absolute inset-0 bg-[var(--background)]/85 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center p-6 text-center z-20">
+                 <div className="transform translate-y-8 group-hover:translate-y-0 transition-all duration-500 delay-75">
+                    <button className="flex items-center gap-2 bg-slate-700 text-white font-black uppercase tracking-wider text-xs px-6 py-3 rounded-full hover:bg-slate-600 transition-all w-full justify-center">
+                      <PlayCircle size={16}/> XEM CHI TIẾT
+                    </button>
+                    <div className="w-12 h-1 bg-slate-500/30 mx-auto rounded-full mt-6 mb-4"></div>
+                    <p className="text-xs text-slate-300 line-clamp-4 leading-relaxed font-medium italic">"{movie.description}"</p>
+                 </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+      )}
 
       {/* 🎬 TRAILER NỔI BẬT */}
       <section className="max-w-7xl mx-auto px-6 mt-16 md:mt-24">
@@ -232,7 +309,7 @@ export default async function Home() {
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {gridMovies.slice(0, 3).map((movie: any) => (
+          {allMovies.slice(0, 3).map((movie: any) => (
              <div key={`trailer-${movie.id}`} className="relative rounded-3xl overflow-hidden aspect-video group border border-slate-800 hover:border-pink-500/50 transition-colors shadow-lg hover:shadow-[0_10px_40px_rgba(236,72,153,0.2)]">
                <img src={movie.poster_url} alt={movie.title} className="w-full h-full object-cover opacity-70 group-hover:opacity-50 transition-opacity duration-500 group-hover:scale-105" />
                <div className="absolute inset-0 flex items-center justify-center">

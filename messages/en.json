@@ -15,5 +15,13 @@
     "searchPlaceholder": "Search movies, cinemas, offers today!",
     "admin": "Admin",
     "scan": "Scan Tickets"
+  },
+  "Login": {
+    "subtitle": "Smart Cinema System",
+    "emailLabel": "Username / Email",
+    "emailPlaceholder": "admin or email...",
+    "passwordLabel": "Password",
+    "loginBtn": "Login",
+    "signupBtn": "Create an Account"
   }
 }

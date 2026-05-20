@@ -4,8 +4,11 @@ import { useState } from 'react'
 import { syncTMDBMovies, deleteAllMovies } from './actions'
 import { Download, Trash2, Film } from 'lucide-react'
 
+import { useRouter } from 'next/navigation'
+
 // Render Page Client Component để có thể dùng nút Bấm có trạng thái Loading
 export default function AdminMoviesPage() {
+  const router = useRouter()
   const [isSyncing, setIsSyncing] = useState(false)
   const [message, setMessage] = useState('')
 
@@ -16,6 +19,7 @@ export default function AdminMoviesPage() {
     const res = await syncTMDBMovies()
     if (res.success) {
       setMessage(`Đồng bộ thành công ${res.count} phim vào Hệ thống rạp!`)
+      router.refresh()
     } else {
       setMessage(`Lỗi: ${res.message}`)
     }
@@ -30,6 +34,7 @@ export default function AdminMoviesPage() {
           setMessage(`Lỗi khi xóa: ${res.message || 'Không rõ nguyên nhân'}`)
        } else {
           setMessage('Đã xóa trắng danh sách phim.')
+          router.refresh()
        }
     }
   }

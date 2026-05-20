@@ -96,6 +96,12 @@ export default function ClientSeatSelector({ showtime, seats, bookedSeatIds }: {
        setCurrentTicketId(res.ticket_id)
        setPaymentMode(true) // Chỉ bật QR sau khi giữ ghế thành công
     } else {
+       if (res.message && res.message.includes('chưa đăng nhập')) {
+          alert('Bạn cần đăng ký hoặc đăng nhập để tiếp tục thanh toán!');
+          router.push('/login?message=Vui lòng đăng nhập hoặc đăng ký để tiếp tục thanh toán');
+          return;
+       }
+       
        alert(res.message || 'Lỗi không xác định')
        if (res.message && res.message.includes('tíc tắc')) {
           setPaymentMode(false)

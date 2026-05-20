@@ -1,6 +1,113 @@
-import { Users, Ticket, Film, Activity, TrendingUp } from 'lucide-react'
+import { Users, Ticket, Film, Activity, TrendingUp, Star } from 'lucide-react'
+import { createClient } from '@/utils/supabase/server'
+import TransactionChart from './TransactionChart'
 
-export default function AdminDashboard() {
+export const revalidate = 0; // Luôn nạp mới dữ liệu
+
+export default async function AdminDashboard() {
+  const supabase = await createClient()
+  
+  // Lấy dữ liệu vé và suất chiếu để tính phim thịnh hành thực tế và biểu đồ
+  const { data: tickets } = await supabase.from('tickets').select('showtime_id, total_amount, created_at').eq('status', 'PAID')
+  const { data: showtimes } = await supabase.from('showtimes').select('id, movie_id')
+
+  let trendingMovies: any[] = [];
+  const movieTicketCounts = new Map<string, number>();
+
+  if (tickets && tickets.length > 0 && showtimes) {
+     const showtimeToMovie = new Map(showtimes.map(st => [st.id, st.movie_id]));
+     
+     tickets.forEach(ticket => {
+        const movieId = showtimeToMovie.get(ticket.showtime_id);
+        if (movieId) {
+           movieTicketCounts.set(movieId, (movieTicketCounts.get(movieId) || 0) + 1);
+        }
+     });
+
+     const sortedMovieIds = Array.from(movieTicketCounts.entries())
+        .sort((a, b) => b[1] - a[1])
+        .map(entry => entry[0]);
+
+     if (sortedMovieIds.length > 0) {
+        const { data: topMovies } = await supabase
+          .from('movies')
+          .select('id, title, poster_url, rating')
+          .in('id', sortedMovieIds.slice(0, 5));
+
+        if (topMovies) {
+           trendingMovies = sortedMovieIds
+             .slice(0, 5)
+             .map(id => topMovies.find(m => m.id === id))
+             .filter(Boolean)
+             .map(m => ({ ...m, ticket_count: movieTicketCounts.get(m.id) }));
+        }
+     }
+  }
+
+  // Nếu chưa có giao dịch nào, hoặc không đủ 5 phim, thì lấy phim rating cao bù vào
+  if (trendingMovies.length < 5) {
+     const excludeIds = trendingMovies.map(m => m.id);
+     // Lấy dư ra một chút (ví dụ limit 20) để lọc trùng lặp tên phim
+     let query = supabase.from('movies').select('id, title, poster_url, rating').order('rating', { ascending: false });
+     
+     // Không cho truyền array rỗng vào .not()
+     if (excludeIds.length > 0) {
+        query = query.not('id', 'in', `(${excludeIds.join(',')})`);
+     }
+     
+     const { data: fallbackMovies } = await query.limit(20);
+     
+     if (fallbackMovies) {
+        // Lọc trùng tên phim (trường hợp admin ấn sync nhiều lần bị trùng db)
+        const uniqueTitles = new Set(trendingMovies.map(m => m.title));
+        const uniqueFallback: any[] = [];
+        
+        for (const m of fallbackMovies) {
+           if (!uniqueTitles.has(m.title)) {
+              uniqueTitles.add(m.title);
+              uniqueFallback.push({ ...m, ticket_count: 0 });
+           }
+           if (trendingMovies.length + uniqueFallback.length >= 5) break;
+        }
+
+        trendingMovies = [...trendingMovies, ...uniqueFallback];
+     }
+  }
+
+  // ==== XỬ LÝ DỮ LIỆU BIỂU ĐỒ GIAO DỊCH ====
+  let chartData: { name: string; doanhThu: number }[] = [];
+  if (tickets && tickets.length > 10) {
+     // Gom nhóm doanh thu theo 7 ngày gần nhất
+     // Map theo chuỗi ngày (VD: '20-05') để dễ nhóm
+     const revenueByDate = new Map<string, number>();
+     
+     // Khởi tạo 7 ngày gần nhất với doanh thu 0 để biểu đồ không bị đứt quãng
+     for (let i = 6; i >= 0; i--) {
+       const d = new Date();
+       d.setDate(d.getDate() - i);
+       const dateStr = d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+       revenueByDate.set(dateStr, 0);
+     }
+
+     tickets.forEach(t => {
+        if (!t.created_at) return;
+        const d = new Date(t.created_at);
+        const dateStr = d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+        
+        // Chỉ tính nếu ngày nằm trong 7 ngày gần nhất đã khởi tạo
+        if (revenueByDate.has(dateStr)) {
+           // Doanh thu chia cho 1000 để biểu đồ hiển thị K VNĐ cho gọn (nếu cần)
+           const amountK = (t.total_amount || 0) / 1000;
+           revenueByDate.set(dateStr, revenueByDate.get(dateStr)! + amountK);
+        }
+     });
+
+     chartData = Array.from(revenueByDate.entries()).map(([name, doanhThu]) => ({
+        name,
+        doanhThu: Math.round(doanhThu)
+     }));
+  }
+
   return (
     <div className="space-y-8 relative">
        {/* Ambient glow moved to layout */}
@@ -26,26 +133,30 @@ export default function AdminDashboard() {
                 <h3 className="text-white font-bold text-lg flex items-center gap-2"><TrendingUp size={18} className="text-[#00f2fe]" /> Lưu lượng giao dịch</h3>
                 <div className="text-xs font-bold text-slate-500 bg-slate-800/50 px-3 py-1 rounded-full border border-slate-700">Tháng này</div>
              </div>
-             <div className="flex-1 flex items-center justify-center border border-dashed border-slate-700 rounded-2xl bg-white/5">
-                <p className="text-slate-500 font-medium text-sm">Biểu đồ Recharts Chart Data (Coming Soon)</p>
+             <div className="flex-1 w-full mt-4 min-h-[250px]">
+                <TransactionChart data={chartData} />
              </div>
           </div>
 
           <div className="h-96 rounded-3xl border border-white/5 bg-slate-900/50 backdrop-blur-xl p-6 flex flex-col shadow-xl">
              <h3 className="text-white font-bold text-lg mb-6">Phim Thịnh Hành</h3>
              <div className="flex-1 flex flex-col gap-4 overflow-y-auto pr-2 custom-scrollbar">
-                {/* Dummy List */}
-                {[1,2,3,4].map((i) => (
-                   <div key={i} className="flex items-center gap-4 bg-slate-800/30 p-3 rounded-xl border border-slate-800/50 hover:bg-slate-800 transition-colors">
-                      <div className="w-12 h-16 bg-slate-700 rounded-lg shrink-0 overflow-hidden">
-                         <div className="w-full h-full bg-gradient-to-tr from-slate-800 to-slate-700 animate-pulse"></div>
+                 {trendingMovies && trendingMovies.length > 0 ? trendingMovies.map((movie, index) => (
+                   <div key={movie.id} className="flex items-center gap-4 bg-slate-800/30 p-3 rounded-xl border border-slate-800/50 hover:bg-slate-800 transition-colors">
+                      <div className="w-12 h-16 bg-slate-700 rounded-lg shrink-0 overflow-hidden relative">
+                         <img src={movie.poster_url} alt={movie.title} className="w-full h-full object-cover" />
                       </div>
-                      <div>
-                         <p className="text-sm font-bold text-slate-200">Movie Title #{i}</p>
-                         <p className="text-xs text-[#00f2fe] mt-1">+{(5-i)*120} Vé hôm nay</p>
+                      <div className="flex-1">
+                         <p className="text-sm font-bold text-slate-200 line-clamp-1">{movie.title}</p>
+                         <div className="flex items-center justify-between mt-1">
+                            <p className="text-xs text-[#00f2fe] font-medium">{movie.ticket_count > 0 ? `🔥 ${movie.ticket_count} Vé đã bán` : 'Đang xu hướng'}</p>
+                            <span className="flex items-center gap-1 text-xs text-yellow-400 font-bold"><Star size={10} fill="currentColor" /> {movie.rating}</span>
+                         </div>
                       </div>
                    </div>
-                ))}
+                 )) : (
+                    <p className="text-slate-500 text-sm italic">Chưa có dữ liệu phim thịnh hành</p>
+                 )}
              </div>
           </div>
        </div>

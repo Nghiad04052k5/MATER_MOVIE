@@ -61,7 +61,7 @@ export default async function AdminLayout({
       <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
         
         {/* TOP NAVBAR */}
-        <header className="h-16 border-b border-slate-800 bg-slate-900/50 backdrop-blur-md flex items-center justify-between px-8 shrink-0 z-10">
+        <header className="h-16 border-b border-slate-800 bg-slate-900/50 backdrop-blur-md flex items-center justify-between px-8 shrink-0 z-50 relative">
            <div className="text-slate-400 font-medium text-sm">
               {/* Vùng Header trống để thanh Nav gọn gàng theo ý muốn */}
            </div>

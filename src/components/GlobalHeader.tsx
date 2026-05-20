@@ -37,7 +37,7 @@ export default function GlobalHeader({ user, ticketCount = 0, notifications = []
             <div className="flex items-center gap-3">
                <Link href="#" className="hover:text-white transition-colors border-r border-slate-700 pr-3">{t('partnerChannel')}</Link>
                <Link href="#" className="hover:text-white transition-colors border-r border-slate-700 pr-3 hidden md:block">{t('becomePartner')}</Link>
-               <Link href="#" className="hover:text-white transition-colors border-r border-slate-700 pr-3 hidden md:block">{t('downloadApp')}</Link>
+               <Link href="/download" className="hover:text-white transition-colors border-r border-slate-700 pr-3 hidden md:block">{t('downloadApp')}</Link>
                <div className="flex items-center gap-2">
                   <span>{t('connect')}</span>
                   <Link href="#" className="hover:text-[#00f2fe]"><MessageCircle size={12} /></Link>

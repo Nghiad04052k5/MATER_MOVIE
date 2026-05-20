@@ -2,6 +2,8 @@ import { createClient } from '@/utils/supabase/server'
 import ClientPage from './ClientPage'
 import { Calendar, Clock, Star } from 'lucide-react'
 
+export const revalidate = 0;
+
 // Cập nhật cách lấy params bất đồng bộ cho Next.js 15+
 // Nhưng page này không có params, ta khai báo chuẩn
 export default async function MoviesServerPage() {

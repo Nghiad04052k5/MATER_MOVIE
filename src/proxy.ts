@@ -5,7 +5,7 @@ import { routing } from './i18n/routing';
 
 const handleI18nRouting = createMiddleware(routing);
 
-export async function proxy(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   // First update session (supabase)
   const supabaseResponse = await updateSession(request)
 
