@@ -37,9 +37,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ---
 
-## 👋 Xin chào từ Antigravity! (Test lập trình trực tiếp)
 
-Dòng chữ này vừa được tôi (trợ lý AI) tự động thêm vào file `README.md` của bạn để demo chức năng chỉnh sửa trực tiếp. 
-Nếu bạn đang mở file này trong VS Code, bạn sẽ thấy nó xuất hiện ngay lập tức mà không cần tải lại!
-
-Hãy nói cho tôi biết bạn đã thấy sự thay đổi này chưa nhé.
