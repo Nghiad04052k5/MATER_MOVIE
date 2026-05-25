@@ -38,7 +38,7 @@ export default async function AdminDashboard() {
            trendingMovies = sortedMovieIds
              .slice(0, 5)
              .map(id => topMovies.find(m => m.id === id))
-             .filter(Boolean)
+             .filter((m): m is NonNullable<typeof m> => Boolean(m))
              .map(m => ({ ...m, ticket_count: movieTicketCounts.get(m.id) }));
         }
      }

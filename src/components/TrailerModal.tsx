@@ -6,11 +6,6 @@ import { PlayCircle, X } from 'lucide-react'
 
 export default function TrailerModal({ trailerUrl, className, children }: { trailerUrl?: string; className?: string; children?: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false)
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   // Chuyển đổi link youtube thông thường sang dạng embed nếu cần
   const getEmbedUrl = (url?: string) => {
@@ -26,6 +21,7 @@ export default function TrailerModal({ trailerUrl, className, children }: { trai
        }
     } catch(e) {
        // fallback
+       console.error(e);
     }
     if (url.includes('watch?v=')) {
       return url.split('&')[0].replace('watch?v=', 'embed/')
@@ -52,7 +48,7 @@ export default function TrailerModal({ trailerUrl, className, children }: { trai
         {children || <><PlayCircle /> Xem Trailer</>}
       </button>
 
-      {isOpen && mounted && createPortal(
+      {isOpen && createPortal(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6">
           {/* Lớp nền mờ */}
           <div 
